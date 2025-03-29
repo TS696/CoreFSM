@@ -2,7 +2,7 @@
 {
     public abstract class SubFsmBase<TFsm> : IState<TFsm> where TFsm : IFsm<TFsm>
     {
-        protected abstract IStateRunner StateRunner { get; }
+        internal abstract IStateRunner StateRunner { get; }
 
         protected virtual NextState<TFsm> OnEndTransition() => NextState<TFsm>.Continue();
         protected virtual NextState<TFsm> OnPostTickTransition() => NextState<TFsm>.Continue();

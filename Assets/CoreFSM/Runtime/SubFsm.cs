@@ -8,7 +8,7 @@ namespace CoreFSM
         where TInner : IFsm<TInner>
     {
         private readonly StateRunner<TInner> _stateRunner;
-        protected sealed override IStateRunner StateRunner => _stateRunner;
+        internal sealed override IStateRunner StateRunner => _stateRunner;
 
         public IState<TInner> CurrentState => _stateRunner.CurrentState;
         public bool IsEnded => _stateRunner.IsEnded;

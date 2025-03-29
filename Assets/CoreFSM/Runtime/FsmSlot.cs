@@ -5,7 +5,7 @@
         where TInner : Fsm<TInner>
     {
         private readonly TInner _fsm;
-        protected sealed override IStateRunner StateRunner => _fsm.StateRunner;
+        internal sealed override IStateRunner StateRunner => _fsm.StateRunner;
 
         public IState<TInner> CurrentState => _fsm.CurrentState;
         public bool IsEnded => _fsm.IsEnded;

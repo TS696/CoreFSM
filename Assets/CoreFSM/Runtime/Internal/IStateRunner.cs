@@ -2,7 +2,7 @@
 
 namespace CoreFSM
 {
-    public interface IStateRunner : IDisposable
+    internal interface IStateRunner : IDisposable
     {
         bool IsEnded { get; }
         void Tick();
