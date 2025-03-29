@@ -35,5 +35,12 @@ namespace CoreFSM
         {
             _stateRunner?.Dispose();
         }
+
+        public string DumpCurrentInfo()
+        {
+            var sb = new System.Text.StringBuilder();
+            ((IFsm)this).Dump(sb);
+            return sb.ToString();
+        }
     }
 }

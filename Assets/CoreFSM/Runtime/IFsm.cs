@@ -1,8 +1,26 @@
-﻿namespace CoreFSM
+﻿using System.Text;
+
+namespace CoreFSM
 {
-    public interface IFsm<T> where T : IFsm<T>
+    public interface IFsm
     {
-        public IState<T> CurrentState { get; }
-        public bool IsEnded { get; }
+        void Dump(StringBuilder sb);
+    }
+
+    public interface IFsm<T> : IFsm where T : IFsm<T>
+    {
+        IState<T> CurrentState { get; }
+        bool IsEnded { get; }
+
+        void IFsm.Dump(StringBuilder sb)
+        {
+            sb.Append(CurrentState.GetType());
+
+            if (CurrentState is IFsm fsm)
+            {
+                sb.Append(" -> ");
+                fsm.Dump(sb);
+            }
+        }
     }
 }
