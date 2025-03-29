@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace CoreFSM
 {
-    public class StateRunner<T> : IDisposable where T : IFsm<T>
+    internal class StateRunner<T> : IDisposable where T : IFsm<T>
     {
-        private readonly IFsm<T> _fsm;
+        private readonly Type _startStateType;
 
         public IState<T> CurrentState { get; private set; }
 
@@ -15,11 +15,11 @@ namespace CoreFSM
 
         private bool _isDisposed;
 
-        public StateRunner(IFsm<T> fsm)
+        public StateRunner(IEnumerable<IState<T>> states, Type startStateType)
         {
-            _fsm = fsm;
+            _startStateType = startStateType;
             CurrentState = EntryState<T>.Instance;
-            foreach (var state in fsm.States)
+            foreach (var state in states)
             {
                 _states.Add(state.StateType, state);
             }
@@ -46,7 +46,7 @@ namespace CoreFSM
 
             if (CurrentState is EntryState<T>)
             {
-                CurrentState = FindState(_fsm.StartStateType);
+                CurrentState = FindState(_startStateType);
                 CurrentState.OnEnter();
             }
 

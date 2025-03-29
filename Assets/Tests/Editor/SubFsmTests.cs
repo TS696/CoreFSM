@@ -27,19 +27,18 @@ namespace Tests.Editor
 
             var fsm = new ParentFsm(states);
 
-            var runner = new StateRunner<ParentFsm>(fsm);
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<ChildFsm>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<ChildFsm>());
             Assert.That(childFsm.CurrentState, Is.InstanceOf<ChildFsmCore>());
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<ChildFsm>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<ChildFsm>());
             Assert.That(childFsm.CurrentState, Is.InstanceOf<ChildFsmExitPoint>());
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<ParentFsmExitPoint>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<ParentFsmExitPoint>());
             Assert.That(childFsm.IsEnded, Is.True);
-            runner.Tick();
-            Assert.That(runner.IsEnded, Is.True);
-            runner.Dispose();
+            fsm.Tick();
+            Assert.That(fsm.IsEnded, Is.True);
+            fsm.Dispose();
         }
 
         [Test]
@@ -52,7 +51,7 @@ namespace Tests.Editor
             };
             var grandChildFsm = new GrandChildFsm(grandChildStates);
             var grandChildSlot = new GrandChildFsmSlot(grandChildFsm);
-            
+
             var childStates = new List<IState<ChildFsm>>
             {
                 new ChildFsmEntryPoint<GrandChildFsmSlot>(),
@@ -69,29 +68,26 @@ namespace Tests.Editor
             };
             var fsm = new ParentFsm(states);
 
-            var runner = new StateRunner<ParentFsm>(fsm);
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<ChildFsm>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<ChildFsm>());
             Assert.That(childFsm.CurrentState, Is.InstanceOf<GrandChildFsmSlot>());
             Assert.That(grandChildSlot.CurrentState, Is.InstanceOf<GrandChildFsmExitPoint>());
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<ChildFsm>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<ChildFsm>());
             Assert.That(childFsm.CurrentState, Is.InstanceOf<ChildFsmExitPoint>());
             Assert.That(grandChildSlot.IsEnded, Is.True);
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<ParentFsmExitPoint>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<ParentFsmExitPoint>());
             Assert.That(childFsm.IsEnded, Is.True);
-            runner.Tick();
-            Assert.That(runner.IsEnded, Is.True);
-            runner.Dispose();
+            fsm.Tick();
+            Assert.That(fsm.IsEnded, Is.True);
+            fsm.Dispose();
         }
 
 
         private class ParentFsm : Fsm<ParentFsm>
         {
-            public override Type StartStateType => typeof(ParentFsmEntryPoint);
-
-            public ParentFsm(IEnumerable<IState<ParentFsm>> states) : base(states)
+            public ParentFsm(IEnumerable<IState<ParentFsm>> states) : base(states, typeof(ParentFsmEntryPoint))
             {
             }
         }
@@ -114,11 +110,9 @@ namespace Tests.Editor
 
         private class ChildFsm : SubFsm<ParentFsm, ChildFsm>
         {
-            public ChildFsm(IEnumerable<IState<ChildFsm>> states) : base(states)
+            public ChildFsm(IEnumerable<IState<ChildFsm>> states) : base(states, typeof(ChildFsmEntryPoint<>))
             {
             }
-
-            public override Type StartStateType => typeof(ChildFsmEntryPoint<>);
 
             protected override NextState<ParentFsm> OnEndTransition()
             {
@@ -166,9 +160,7 @@ namespace Tests.Editor
 
         private class GrandChildFsm : Fsm<GrandChildFsm>
         {
-            public override Type StartStateType => typeof(GrandChildFsmEntryPoint);
-
-            public GrandChildFsm(IEnumerable<IState<GrandChildFsm>> states) : base(states)
+            public GrandChildFsm(IEnumerable<IState<GrandChildFsm>> states) : base(states, typeof(GrandChildFsmEntryPoint))
             {
             }
         }

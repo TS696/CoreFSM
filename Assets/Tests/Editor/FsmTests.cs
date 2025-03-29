@@ -16,11 +16,10 @@ namespace Tests.Editor
             };
 
             var fsm = new SingleStateFsm(states);
-            var runner = new StateRunner<SingleStateFsm>(fsm);
 
-            runner.Tick();
-            Assert.That(runner.IsEnded, Is.True);
-            runner.Dispose();
+            fsm.Tick();
+            Assert.That(fsm.IsEnded, Is.True);
+            fsm.Dispose();
         }
 
         [Test]
@@ -33,13 +32,12 @@ namespace Tests.Editor
             };
 
             var fsm = new SingleStateFsm(states);
-            var runner = new StateRunner<SingleStateFsm>(fsm);
-            runner.Dispose();
+            fsm.Dispose();
             Assert.That(singleState.IsDestroyed, Is.True);
 
             Assert.Throws(typeof(ObjectDisposedException), () =>
             {
-                runner.Tick();
+                fsm.Tick();
             });
         }
 
@@ -55,15 +53,14 @@ namespace Tests.Editor
             };
 
             var fsm = new MultiStateFsm(states);
-            var runner = new StateRunner<MultiStateFsm>(fsm);
 
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<MultiStateFsmCore>());
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<MultiStateFsmExitPoint>());
-            runner.Tick();
-            Assert.That(runner.IsEnded, Is.True);
-            runner.Dispose();
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<MultiStateFsmCore>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<MultiStateFsmExitPoint>());
+            fsm.Tick();
+            Assert.That(fsm.IsEnded, Is.True);
+            fsm.Dispose();
         }
 
         [Test]
@@ -77,32 +74,29 @@ namespace Tests.Editor
             };
 
             var fsm = new MultiStateFsm(states);
-            var runner = new StateRunner<MultiStateFsm>(fsm);
 
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<MultiStateFsmCore>());
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<MultiStateFsmExitPoint>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<MultiStateFsmCore>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<MultiStateFsmExitPoint>());
 
-            runner.Stop();
-            runner.Reset();
+            fsm.Stop();
+            fsm.Reset();
 
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<MultiStateFsmCore>());
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<MultiStateFsmExitPoint>());
-            runner.Tick();
-            Assert.That(runner.IsEnded, Is.True);
-            runner.Dispose();
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<MultiStateFsmCore>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<MultiStateFsmExitPoint>());
+            fsm.Tick();
+            Assert.That(fsm.IsEnded, Is.True);
+            fsm.Dispose();
         }
 
         private class SingleStateFsm : Fsm<SingleStateFsm>
         {
-            public SingleStateFsm(IEnumerable<IState<SingleStateFsm>> states) : base(states)
+            public SingleStateFsm(IEnumerable<IState<SingleStateFsm>> states) : base(states, typeof(SingleState))
             {
             }
-
-            public override Type StartStateType => typeof(SingleState);
         }
 
         private class SingleState : IState<SingleStateFsm>
@@ -122,11 +116,9 @@ namespace Tests.Editor
 
         private class MultiStateFsm : Fsm<MultiStateFsm>
         {
-            public MultiStateFsm(IEnumerable<IState<MultiStateFsm>> states) : base(states)
+            public MultiStateFsm(IEnumerable<IState<MultiStateFsm>> states) : base(states, typeof(MultiStateFsmEntryPoint))
             {
             }
-
-            public override Type StartStateType => typeof(MultiStateFsmEntryPoint);
         }
 
         private class MultiStateFsmEntryPoint : IState<MultiStateFsm>

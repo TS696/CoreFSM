@@ -43,10 +43,9 @@ namespace Tests.VContainerTests
             var container = _testLifetimeScope.Container;
 
             var testFsm = container.Resolve<TestFsm>();
-            var runner = new StateRunner<TestFsm>(testFsm);
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<TestState>());
-            runner.Dispose();
+            testFsm.Tick();
+            Assert.That(testFsm.CurrentState, Is.InstanceOf<TestState>());
+            testFsm.Dispose();
         }
 
         [Test]
@@ -65,10 +64,9 @@ namespace Tests.VContainerTests
             var container = _testLifetimeScope.Container;
 
             var testFsm = container.Resolve<TestFsm>();
-            var runner = new StateRunner<TestFsm>(testFsm);
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<TestSubFsm>());
-            runner.Dispose();
+            testFsm.Tick();
+            Assert.That(testFsm.CurrentState, Is.InstanceOf<TestSubFsm>());
+            testFsm.Dispose();
         }
 
         [Test]
@@ -88,20 +86,17 @@ namespace Tests.VContainerTests
             var container = _testLifetimeScope.Container;
 
             var testFsm = container.Resolve<TestFsm>();
-            var runner = new StateRunner<TestFsm>(testFsm);
-            runner.Tick();
-            Assert.That(runner.CurrentState, Is.InstanceOf<TestFsmSlot>());
-            runner.Dispose();
+            testFsm.Tick();
+            Assert.That(testFsm.CurrentState, Is.InstanceOf<TestFsmSlot>());
+            testFsm.Dispose();
         }
     }
 
     public class TestFsm : Fsm<TestFsm>
     {
-        public TestFsm(IEnumerable<IState<TestFsm>> states) : base(states)
+        public TestFsm(IEnumerable<IState<TestFsm>> states) : base(states, typeof(TestEntryState<>))
         {
         }
-
-        public override Type StartStateType => typeof(TestEntryState<>);
     }
 
     public class TestEntryState<T> : IState<TestFsm> where T : IState<TestFsm>
@@ -120,11 +115,9 @@ namespace Tests.VContainerTests
 
     public class TestSubFsm : SubFsm<TestFsm, TestSubFsm>
     {
-        public TestSubFsm(IEnumerable<IState<TestSubFsm>> states) : base(states)
+        public TestSubFsm(IEnumerable<IState<TestSubFsm>> states) : base(states, typeof(TestSubState))
         {
         }
-
-        public override Type StartStateType => typeof(TestSubState);
     }
 
     public class TestSubState : IState<TestSubFsm>
@@ -140,11 +133,9 @@ namespace Tests.VContainerTests
 
     public class TestChildFsm : Fsm<TestChildFsm>
     {
-        public TestChildFsm(IEnumerable<IState<TestChildFsm>> states) : base(states)
+        public TestChildFsm(IEnumerable<IState<TestChildFsm>> states) : base(states, typeof(TestChildState))
         {
         }
-
-        public override Type StartStateType => typeof(TestChildState);
     }
 
     public class TestChildState : IState<TestChildFsm>

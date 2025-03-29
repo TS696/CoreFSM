@@ -12,13 +12,9 @@ namespace CoreFSM
         public IState<TInner> CurrentState => _stateRunner.CurrentState;
         public bool IsEnded => _stateRunner.IsEnded;
 
-        public abstract Type StartStateType { get; }
-        public IEnumerable<IState<TInner>> States { get; }
-
-        protected SubFsm(IEnumerable<IState<TInner>> states)
+        protected SubFsm(IEnumerable<IState<TInner>> states, Type startStateType)
         {
-            States = states;
-            _stateRunner = new StateRunner<TInner>(this);
+            _stateRunner = new StateRunner<TInner>(states, startStateType);
         }
 
         protected virtual NextState<TFsm> OnEndTransition() => NextState<TFsm>.Continue();
@@ -53,22 +49,6 @@ namespace CoreFSM
         void IState<TFsm>.OnDestroy()
         {
             _stateRunner.Dispose();
-        }
-    }
-
-    public abstract class FsmSlot<TFsm, TInner> : SubFsm<TFsm, TInner>
-        where TFsm : IFsm<TFsm>
-        where TInner : IFsm<TInner>
-    {
-        public sealed override Type StartStateType { get; }
-
-        private FsmSlot(IEnumerable<IState<TInner>> states) : base(states)
-        {
-        }
-
-        protected FsmSlot(TInner fsm) : this(fsm.States)
-        {
-            StartStateType = fsm.StartStateType;
         }
     }
 }
