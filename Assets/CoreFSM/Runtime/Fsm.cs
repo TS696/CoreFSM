@@ -11,7 +11,7 @@ namespace CoreFSM
         public IState<T> CurrentState => _stateRunner.CurrentState;
         public bool IsEnded => _stateRunner.IsEnded;
 
-        public Fsm(IEnumerable<IState<T>> states, Type startStateType)
+        protected Fsm(IEnumerable<IState<T>> states, Type startStateType)
         {
             _stateRunner = new StateRunner<T>(states, startStateType);
         }
