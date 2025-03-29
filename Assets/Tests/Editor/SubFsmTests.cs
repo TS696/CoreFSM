@@ -20,7 +20,7 @@ namespace Tests.Editor
 
             var states = new List<IState<ParentFsm>>
             {
-                new ParentFsmEntryPoint(),
+                new ParentFsmEntryPoint<ChildFsm>(),
                 childFsm,
                 new ParentFsmExitPoint()
             };
@@ -62,7 +62,7 @@ namespace Tests.Editor
 
             var states = new List<IState<ParentFsm>>
             {
-                new ParentFsmEntryPoint(),
+                new ParentFsmEntryPoint<ChildFsm>(),
                 childFsm,
                 new ParentFsmExitPoint()
             };
@@ -84,19 +84,58 @@ namespace Tests.Editor
             fsm.Dispose();
         }
 
+        [Test]
+        public void SubFsmReEntryTest()
+        {
+            var childStates = new List<IState<ChildFsm>>
+            {
+                new ChildFsmEntryPoint<ChildFsmCore>(),
+                new ChildFsmCore(),
+                new ChildFsmExitPoint()
+            };
+            var childFsm = new ChildFsmReEntry(childStates);
+
+            var states = new List<IState<ParentFsm>>
+            {
+                new ParentFsmEntryPoint<ChildFsmReEntry>(),
+                childFsm,
+                new ParentFsmExitPoint()
+            };
+
+            var fsm = new ParentFsm(states);
+
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<ChildFsmReEntry>());
+            Assert.That(childFsm.CurrentState, Is.InstanceOf<ChildFsmCore>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<ChildFsmReEntry>());
+            Assert.That(childFsm.CurrentState, Is.InstanceOf<ChildFsmCore>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<ChildFsmReEntry>());
+            Assert.That(childFsm.CurrentState, Is.InstanceOf<ChildFsmExitPoint>());
+            fsm.Tick();
+            Assert.That(fsm.CurrentState, Is.InstanceOf<ParentFsmExitPoint>());
+            Assert.That(childFsm.IsEnded, Is.True);
+            fsm.Tick();
+            Assert.That(fsm.IsEnded, Is.True);
+            fsm.Dispose();
+        }
+
 
         private class ParentFsm : Fsm<ParentFsm>
         {
-            public ParentFsm(IEnumerable<IState<ParentFsm>> states) : base(states, typeof(ParentFsmEntryPoint))
+            public ParentFsm(IEnumerable<IState<ParentFsm>> states) : base(states, typeof(ParentFsmEntryPoint<>))
             {
             }
         }
 
-        private class ParentFsmEntryPoint : IState<ParentFsm>
+        private class ParentFsmEntryPoint<TState> : IState<ParentFsm> where TState : IState<ParentFsm>
         {
+            public Type StateType => typeof(ParentFsmEntryPoint<>);
+
             public NextState<ParentFsm> OnTick()
             {
-                return NextState<ParentFsm>.TransitionTo<ChildFsm>();
+                return NextState<ParentFsm>.TransitionTo<TState>();
             }
         }
 
@@ -120,13 +159,38 @@ namespace Tests.Editor
             }
         }
 
-        private class ChildFsmEntryPoint<T> : IState<ChildFsm> where T : IState<ChildFsm>
+        private class ChildFsmReEntry : SubFsm<ParentFsm, ChildFsm>
+        {
+            private int _tickCount;
+
+            public ChildFsmReEntry(IEnumerable<IState<ChildFsm>> states) : base(states, typeof(ChildFsmEntryPoint<>))
+            {
+            }
+
+            protected override NextState<ParentFsm> OnEndTransition()
+            {
+                return NextState<ParentFsm>.TransitionTo<ParentFsmExitPoint>();
+            }
+
+            protected override NextState<ParentFsm> OnPostTickTransition()
+            {
+                if (_tickCount > 0)
+                {
+                    return NextState<ParentFsm>.Continue();
+                }
+
+                _tickCount++;
+                return NextState<ParentFsm>.TransitionTo<ChildFsmReEntry>();
+            }
+        }
+
+        private class ChildFsmEntryPoint<TState> : IState<ChildFsm> where TState : IState<ChildFsm>
         {
             public Type StateType => typeof(ChildFsmEntryPoint<>);
 
             public NextState<ChildFsm> OnTick()
             {
-                return NextState<ChildFsm>.TransitionTo<T>();
+                return NextState<ChildFsm>.TransitionTo<TState>();
             }
         }
 
