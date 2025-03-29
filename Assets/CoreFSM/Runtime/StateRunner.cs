@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CoreFSM
 {
-    internal class StateRunner<T> : IDisposable where T : IFsm<T>
+    internal class StateRunner<T> : IStateRunner where T : IFsm<T>
     {
         private readonly Type _startStateType;
 
