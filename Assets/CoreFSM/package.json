@@ -1,0 +1,8 @@
+﻿{
+  "name": "com.ts696.corefsm",
+  "displayName": "CoreFSM",
+  "version": "1.0.0",
+  "unity": "6000.0",
+  "description": "A simple, DI-friendly state machine library for Unity.",
+  "license": "MIT"
+}
