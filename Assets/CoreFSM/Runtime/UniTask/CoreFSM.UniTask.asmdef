@@ -1,0 +1,23 @@
+{
+    "name": "CoreFSM.UniTask",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a33c92a20d1b797419cfa2cd814883d4",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "",
+            "define": "COREFSM_USE_UNITASK"
+        }
+    ],
+    "noEngineReferences": false
+}
