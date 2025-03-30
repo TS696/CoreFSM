@@ -1,14 +1,14 @@
 ﻿namespace CoreFSM
 {
-    public interface IState<T> where T : IFsm<T>
+    public interface IState<TFsm> where TFsm : IFsm<TFsm>
     {
         void OnEnter()
         {
         }
 
-        NextState<T> OnTick()
+        NextState<TFsm> OnTick()
         {
-            return NextState<T>.Continue();
+            return NextState<TFsm>.Continue();
         }
 
         void OnExit()

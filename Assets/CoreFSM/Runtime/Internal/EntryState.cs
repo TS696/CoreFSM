@@ -1,7 +1,7 @@
 ﻿namespace CoreFSM
 {
-    internal class EntryState<T> : IState<T> where T : IFsm<T>
+    internal class EntryState<TFsm> : IState<TFsm> where TFsm : IFsm<TFsm>
     {
-        public static EntryState<T> Instance { get; } = new();
+        public static EntryState<TFsm> Instance { get; } = new();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace CoreFSM
 {
-    public readonly struct NextState<T> where T : IFsm<T>
+    public readonly struct NextState<TFsm> where TFsm : IFsm<TFsm>
     {
         internal readonly bool IsTransition;
         internal readonly Type NextStateType;
@@ -13,19 +13,19 @@ namespace CoreFSM
             NextStateType = nextStateType;
         }
 
-        public static NextState<T> TransitionTo<TNext>() where TNext : IState<T>
+        public static NextState<TFsm> TransitionTo<TNext>() where TNext : IState<TFsm>
         {
-            return new NextState<T>(true, typeof(TNext));
+            return new NextState<TFsm>(true, typeof(TNext));
         }
 
-        public static NextState<T> Continue()
+        public static NextState<TFsm> Continue()
         {
-            return new NextState<T>(false, null);
+            return new NextState<TFsm>(false, null);
         }
 
-        public static NextState<T> End()
+        public static NextState<TFsm> End()
         {
-            return TransitionTo<EndState<T>>();
+            return TransitionTo<EndState<TFsm>>();
         }
     }
 }

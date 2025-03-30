@@ -111,11 +111,11 @@ namespace Tests.VContainerTests
         }
     }
 
-    public class TestEntryState<T> : IState<TestFsm> where T : IState<TestFsm>
+    public class TestEntryState<TState> : IState<TestFsm> where TState : IState<TestFsm>
     {
         public NextState<TestFsm> OnTick()
         {
-            return NextState<TestFsm>.TransitionTo<T>();
+            return NextState<TestFsm>.TransitionTo<TState>();
         }
     }
 

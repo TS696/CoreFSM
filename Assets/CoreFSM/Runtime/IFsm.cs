@@ -7,9 +7,9 @@ namespace CoreFSM
         void Dump(StringBuilder sb);
     }
 
-    public interface IFsm<T> : IFsm where T : IFsm<T>
+    public interface IFsm<TFsm> : IFsm where TFsm : IFsm<TFsm>
     {
-        IState<T> CurrentState { get; }
+        IState<TFsm> CurrentState { get; }
         bool IsEnded { get; }
 
         void IFsm.Dump(StringBuilder sb)

@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace CoreFSM
 {
-    public abstract class Fsm<T> : IFsm<T> where T : Fsm<T>
+    public abstract class Fsm<TFsm> : IFsm<TFsm> where TFsm : Fsm<TFsm>
     {
-        private readonly StateRunner<T> _stateRunner;
-        internal StateRunner<T> StateRunner => _stateRunner;
+        private readonly StateRunner<TFsm> _stateRunner;
+        internal StateRunner<TFsm> StateRunner => _stateRunner;
 
-        public IState<T> CurrentState => _stateRunner.CurrentState;
+        public IState<TFsm> CurrentState => _stateRunner.CurrentState;
         public bool IsEnded => _stateRunner.IsEnded;
 
-        protected Fsm(IEnumerable<IState<T>> states, Type startStateType)
+        protected Fsm(IEnumerable<IState<TFsm>> states, Type startStateType)
         {
-            _stateRunner = new StateRunner<T>(states, startStateType);
+            _stateRunner = new StateRunner<TFsm>(states, startStateType);
         }
 
         public void Tick()

@@ -1,16 +1,16 @@
 ﻿namespace CoreFSM
 {
-    public abstract class FsmSlot<TFsm, TInner> : SubFsmBase<TFsm>, IFsm<TInner>
+    public abstract class FsmSlot<TFsm, TSubFsm> : SubFsmBase<TFsm>, IFsm<TSubFsm>
         where TFsm : IFsm<TFsm>
-        where TInner : Fsm<TInner>
+        where TSubFsm : Fsm<TSubFsm>
     {
-        private readonly TInner _fsm;
+        private readonly TSubFsm _fsm;
         internal sealed override IStateRunner StateRunner => _fsm.StateRunner;
 
-        public IState<TInner> CurrentState => _fsm.CurrentState;
+        public IState<TSubFsm> CurrentState => _fsm.CurrentState;
         public bool IsEnded => _fsm.IsEnded;
 
-        protected FsmSlot(TInner fsm)
+        protected FsmSlot(TSubFsm fsm)
         {
             _fsm = fsm;
         }
