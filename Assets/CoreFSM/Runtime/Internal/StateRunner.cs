@@ -21,7 +21,7 @@ namespace CoreFSM
             CurrentState = EntryState<T>.Instance;
             foreach (var state in states)
             {
-                _states.Add(state.StateType, state);
+                _states.Add(state.GetType(), state);
             }
         }
 

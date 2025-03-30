@@ -5,6 +5,7 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "CoreFSM",
+        "CoreFSM.VContainer",
         "VContainer"
     ],
     "includePlatforms": [],
@@ -18,6 +19,12 @@
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "jp.hadashikick.vcontainer",
+            "expression": "",
+            "define": "COREFSM_USE_VCONTAINER"
+        }
+    ],
     "noEngineReferences": false
 }

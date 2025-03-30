@@ -1,0 +1,67 @@
+﻿#if COREFSM_USE_VCONTAINER
+using System;
+using VContainer;
+
+namespace CoreFSM.VContainer
+{
+    public class FsmBuilder<TFsm> where TFsm : IFsm<TFsm>
+    {
+        private readonly IContainerBuilder _containerBuilder;
+        private Type _startStateType;
+        internal Type StartStateType => _startStateType;
+
+        public FsmBuilder(IContainerBuilder containerBuilder)
+        {
+            _containerBuilder = containerBuilder;
+        }
+
+        public void RegisterStartState<TState>() where TState : IState<TFsm>
+        {
+            _startStateType = typeof(TState);
+            RegisterState<TState>();
+        }
+
+        public void RegisterState<TState>() where TState : IState<TFsm>
+        {
+            _containerBuilder.Register<IState<TFsm>, TState>(Lifetime.Singleton);
+        }
+
+        public void RegisterSubFsm<TSubFsm>(Action<FsmBuilder<TSubFsm>> configure)
+            where TSubFsm : SubFsm<TFsm, TSubFsm>
+        {
+            var subFsmBuilder = new FsmBuilder<TSubFsm>(_containerBuilder);
+            configure(subFsmBuilder);
+            subFsmBuilder.OnConfigured();
+            _containerBuilder.Register<IState<TFsm>, TSubFsm>(Lifetime.Singleton)
+                .WithParameter(subFsmBuilder.StartStateType);
+        }
+
+        public void RegisterFsmSlot<TSlot, TSubFsm>()
+            where TSlot : FsmSlot<TFsm, TSubFsm>
+            where TSubFsm : Fsm<TSubFsm>
+        {
+            RegisterState<TSlot>();
+        }
+
+        internal void OnConfigured()
+        {
+            if (_startStateType == null)
+            {
+                throw new InvalidOperationException($"Start state type is not registered. Call {nameof(RegisterStartState)}().");
+            }
+        }
+    }
+
+    public static class VContainerExtensions
+    {
+        public static void RegisterFsm<TFsm>(this IContainerBuilder containerBuilder, Action<FsmBuilder<TFsm>> configure)
+            where TFsm : IFsm<TFsm>
+        {
+            var fsmBuilder = new FsmBuilder<TFsm>(containerBuilder);
+            configure(fsmBuilder);
+            fsmBuilder.OnConfigured();
+            containerBuilder.Register<TFsm>(Lifetime.Singleton).WithParameter(fsmBuilder.StartStateType);
+        }
+    }
+}
+#endif

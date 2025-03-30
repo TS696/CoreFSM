@@ -19,12 +19,10 @@ namespace Tests.Editor
         {
             var states = new List<IState<AsyncStateFsm>>
             {
-                new AsyncStateEntryPoint<AsyncTickTestState>(),
                 new AsyncTickTestState(),
             };
 
-            var fsm = new AsyncStateFsm(states);
-            fsm.Tick();
+            var fsm = new AsyncStateFsm(states, typeof(AsyncTickTestState));
             fsm.Tick();
             LogAssert.Expect("tick 1");
             fsm.Tick();
@@ -41,12 +39,10 @@ namespace Tests.Editor
 
             var states = new List<IState<AsyncStateFsm>>
             {
-                new AsyncStateEntryPoint<AsyncCancelTestState>(),
                 asyncCancelTestState,
             };
 
-            var fsm = new AsyncStateFsm(states);
-            fsm.Tick();
+            var fsm = new AsyncStateFsm(states, typeof(AsyncCancelTestState));
             fsm.Tick();
             fsm.Dispose();
 
@@ -57,18 +53,8 @@ namespace Tests.Editor
 
         private class AsyncStateFsm : Fsm<AsyncStateFsm>
         {
-            public AsyncStateFsm(IEnumerable<IState<AsyncStateFsm>> states) : base(states, typeof(AsyncStateEntryPoint<>))
+            public AsyncStateFsm(IEnumerable<IState<AsyncStateFsm>> states, Type startStateType) : base(states, startStateType)
             {
-            }
-        }
-
-        private class AsyncStateEntryPoint<TState> : IState<AsyncStateFsm> where TState : IState<AsyncStateFsm>
-        {
-            public Type StateType => typeof(AsyncStateEntryPoint<>);
-
-            NextState<AsyncStateFsm> IState<AsyncStateFsm>.OnTick()
-            {
-                return NextState<AsyncStateFsm>.TransitionTo<TState>();
             }
         }
 

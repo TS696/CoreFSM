@@ -1,11 +1,7 @@
-﻿using System;
-
-namespace CoreFSM
+﻿namespace CoreFSM
 {
     public interface IState<T> where T : IFsm<T>
     {
-        Type StateType => GetType();
-
         void OnEnter()
         {
         }

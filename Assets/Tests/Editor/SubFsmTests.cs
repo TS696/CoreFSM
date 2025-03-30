@@ -16,7 +16,7 @@ namespace Tests.Editor
                 new ChildFsmCore(),
                 new ChildFsmExitPoint()
             };
-            var childFsm = new ChildFsm(childStates);
+            var childFsm = new ChildFsm(childStates, typeof(ChildFsmEntryPoint<ChildFsmCore>));
 
             var states = new List<IState<ParentFsm>>
             {
@@ -25,7 +25,7 @@ namespace Tests.Editor
                 new ParentFsmExitPoint()
             };
 
-            var fsm = new ParentFsm(states);
+            var fsm = new ParentFsm(states, typeof(ParentFsmEntryPoint<ChildFsm>));
 
             fsm.Tick();
             Assert.That(fsm.CurrentState, Is.InstanceOf<ChildFsm>());
@@ -58,7 +58,7 @@ namespace Tests.Editor
                 grandChildSlot,
                 new ChildFsmExitPoint()
             };
-            var childFsm = new ChildFsm(childStates);
+            var childFsm = new ChildFsm(childStates, typeof(ChildFsmEntryPoint<GrandChildFsmSlot>));
 
             var states = new List<IState<ParentFsm>>
             {
@@ -66,7 +66,7 @@ namespace Tests.Editor
                 childFsm,
                 new ParentFsmExitPoint()
             };
-            var fsm = new ParentFsm(states);
+            var fsm = new ParentFsm(states, typeof(ParentFsmEntryPoint<ChildFsm>));
 
             fsm.Tick();
             Assert.That(fsm.CurrentState, Is.InstanceOf<ChildFsm>());
@@ -93,7 +93,7 @@ namespace Tests.Editor
                 new ChildFsmCore(),
                 new ChildFsmExitPoint()
             };
-            var childFsm = new ChildFsmReEntry(childStates);
+            var childFsm = new ChildFsmReEntry(childStates, typeof(ChildFsmEntryPoint<ChildFsmCore>));
 
             var states = new List<IState<ParentFsm>>
             {
@@ -102,7 +102,7 @@ namespace Tests.Editor
                 new ParentFsmExitPoint()
             };
 
-            var fsm = new ParentFsm(states);
+            var fsm = new ParentFsm(states, typeof(ParentFsmEntryPoint<ChildFsmReEntry>));
 
             fsm.Tick();
             Assert.That(fsm.CurrentState, Is.InstanceOf<ChildFsmReEntry>());
@@ -124,15 +124,13 @@ namespace Tests.Editor
 
         private class ParentFsm : Fsm<ParentFsm>
         {
-            public ParentFsm(IEnumerable<IState<ParentFsm>> states) : base(states, typeof(ParentFsmEntryPoint<>))
+            public ParentFsm(IEnumerable<IState<ParentFsm>> states, Type startStateType) : base(states, startStateType)
             {
             }
         }
 
         private class ParentFsmEntryPoint<TState> : IState<ParentFsm> where TState : IState<ParentFsm>
         {
-            public Type StateType => typeof(ParentFsmEntryPoint<>);
-
             public NextState<ParentFsm> OnTick()
             {
                 return NextState<ParentFsm>.TransitionTo<TState>();
@@ -149,7 +147,7 @@ namespace Tests.Editor
 
         private class ChildFsm : SubFsm<ParentFsm, ChildFsm>
         {
-            public ChildFsm(IEnumerable<IState<ChildFsm>> states) : base(states, typeof(ChildFsmEntryPoint<>))
+            public ChildFsm(IEnumerable<IState<ChildFsm>> states, Type startStateType) : base(states, startStateType)
             {
             }
 
@@ -163,7 +161,7 @@ namespace Tests.Editor
         {
             private int _tickCount;
 
-            public ChildFsmReEntry(IEnumerable<IState<ChildFsm>> states) : base(states, typeof(ChildFsmEntryPoint<>))
+            public ChildFsmReEntry(IEnumerable<IState<ChildFsm>> states, Type startStateType) : base(states, startStateType)
             {
             }
 
@@ -186,8 +184,6 @@ namespace Tests.Editor
 
         private class ChildFsmEntryPoint<TState> : IState<ChildFsm> where TState : IState<ChildFsm>
         {
-            public Type StateType => typeof(ChildFsmEntryPoint<>);
-
             public NextState<ChildFsm> OnTick()
             {
                 return NextState<ChildFsm>.TransitionTo<TState>();

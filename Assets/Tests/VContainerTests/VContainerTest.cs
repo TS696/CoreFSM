@@ -1,4 +1,5 @@
 using CoreFSM;
+using CoreFSM.VContainer;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -33,9 +34,11 @@ namespace Tests.VContainerTests
         {
             _testLifetimeScope.OnConfigure = builder =>
             {
-                builder.Register<TestFsm>(Lifetime.Singleton);
-                builder.Register<IState<TestFsm>, TestEntryState<TestState>>(Lifetime.Singleton);
-                builder.Register<IState<TestFsm>, TestState>(Lifetime.Singleton);
+                builder.RegisterFsm<TestFsm>(configure =>
+                {
+                    configure.RegisterStartState<TestEntryState<TestState>>();
+                    configure.RegisterState<TestState>();
+                });
             };
 
             _testLifetimeScope.Build();
@@ -53,10 +56,14 @@ namespace Tests.VContainerTests
         {
             _testLifetimeScope.OnConfigure = builder =>
             {
-                builder.Register<TestFsm>(Lifetime.Singleton);
-                builder.Register<IState<TestFsm>, TestEntryState<TestSubFsm>>(Lifetime.Singleton);
-                builder.Register<IState<TestFsm>, TestSubFsm>(Lifetime.Singleton);
-                builder.Register<IState<TestSubFsm>, TestSubState>(Lifetime.Singleton);
+                builder.RegisterFsm<TestFsm>(configure =>
+                {
+                    configure.RegisterStartState<TestEntryState<TestSubFsm>>();
+                    configure.RegisterSubFsm<TestSubFsm>(subConfigure =>
+                    {
+                        subConfigure.RegisterStartState<TestSubState>();
+                    });
+                });
             };
 
             _testLifetimeScope.Build();
@@ -74,11 +81,16 @@ namespace Tests.VContainerTests
         {
             _testLifetimeScope.OnConfigure = builder =>
             {
-                builder.Register<TestFsm>(Lifetime.Singleton);
-                builder.Register<IState<TestFsm>, TestEntryState<TestFsmSlot>>(Lifetime.Singleton);
-                builder.Register<IState<TestFsm>, TestFsmSlot>(Lifetime.Singleton);
-                builder.Register<TestChildFsm>(Lifetime.Singleton);
-                builder.Register<IState<TestChildFsm>, TestChildState>(Lifetime.Singleton);
+                builder.RegisterFsm<TestFsm>(configure =>
+                {
+                    configure.RegisterStartState<TestEntryState<TestFsmSlot>>();
+                    configure.RegisterFsmSlot<TestFsmSlot, TestChildFsm>();
+                });
+
+                builder.RegisterFsm<TestChildFsm>(configure =>
+                {
+                    configure.RegisterStartState<TestChildState>();
+                });
             };
 
             _testLifetimeScope.Build();
@@ -94,15 +106,13 @@ namespace Tests.VContainerTests
 
     public class TestFsm : Fsm<TestFsm>
     {
-        public TestFsm(IEnumerable<IState<TestFsm>> states) : base(states, typeof(TestEntryState<>))
+        public TestFsm(IEnumerable<IState<TestFsm>> states, Type startStateType) : base(states, startStateType)
         {
         }
     }
 
     public class TestEntryState<T> : IState<TestFsm> where T : IState<TestFsm>
     {
-        public Type StateType => typeof(TestEntryState<>);
-
         public NextState<TestFsm> OnTick()
         {
             return NextState<TestFsm>.TransitionTo<T>();
@@ -115,7 +125,7 @@ namespace Tests.VContainerTests
 
     public class TestSubFsm : SubFsm<TestFsm, TestSubFsm>
     {
-        public TestSubFsm(IEnumerable<IState<TestSubFsm>> states) : base(states, typeof(TestSubState))
+        public TestSubFsm(IEnumerable<IState<TestSubFsm>> states, Type startStateType) : base(states, startStateType)
         {
         }
     }
@@ -133,7 +143,7 @@ namespace Tests.VContainerTests
 
     public class TestChildFsm : Fsm<TestChildFsm>
     {
-        public TestChildFsm(IEnumerable<IState<TestChildFsm>> states) : base(states, typeof(TestChildState))
+        public TestChildFsm(IEnumerable<IState<TestChildFsm>> states, Type startStateType) : base(states, startStateType)
         {
         }
     }
