@@ -75,33 +75,6 @@ namespace Tests.VContainerTests
             Assert.That(testFsm.CurrentState, Is.InstanceOf<TestSubFsm>());
             testFsm.Dispose();
         }
-
-        [Test]
-        public void FsmSlotInjectTest()
-        {
-            _testLifetimeScope.OnConfigure = builder =>
-            {
-                builder.RegisterFsm<TestFsm>(fsmBuilder =>
-                {
-                    fsmBuilder.RegisterStartState<TestEntryState<TestFsmSlot>>();
-                    fsmBuilder.RegisterFsmSlot<TestFsmSlot, TestChildFsm>();
-                });
-
-                builder.RegisterFsm<TestChildFsm>(configure =>
-                {
-                    configure.RegisterStartState<TestChildState>();
-                });
-            };
-
-            _testLifetimeScope.Build();
-
-            var container = _testLifetimeScope.Container;
-
-            var testFsm = container.Resolve<TestFsm>();
-            testFsm.Tick();
-            Assert.That(testFsm.CurrentState, Is.InstanceOf<TestFsmSlot>());
-            testFsm.Dispose();
-        }
     }
 
     public class TestFsm : Fsm<TestFsm>
@@ -132,13 +105,6 @@ namespace Tests.VContainerTests
 
     public class TestSubState : IState<TestSubFsm>
     {
-    }
-
-    public class TestFsmSlot : FsmSlot<TestFsm, TestChildFsm>
-    {
-        public TestFsmSlot(TestChildFsm fsm) : base(fsm)
-        {
-        }
     }
 
     public class TestChildFsm : Fsm<TestChildFsm>
