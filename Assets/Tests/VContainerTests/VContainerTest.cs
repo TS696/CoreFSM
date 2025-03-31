@@ -34,10 +34,10 @@ namespace Tests.VContainerTests
         {
             _testLifetimeScope.OnConfigure = builder =>
             {
-                builder.RegisterFsm<TestFsm>(configure =>
+                builder.RegisterFsm<TestFsm>(fsmBuilder =>
                 {
-                    configure.RegisterStartState<TestEntryState<TestState>>();
-                    configure.RegisterState<TestState>();
+                    fsmBuilder.RegisterStartState<TestEntryState<TestState>>();
+                    fsmBuilder.RegisterState<TestState>();
                 });
             };
 
@@ -56,10 +56,10 @@ namespace Tests.VContainerTests
         {
             _testLifetimeScope.OnConfigure = builder =>
             {
-                builder.RegisterFsm<TestFsm>(configure =>
+                builder.RegisterFsm<TestFsm>(fsmBuilder =>
                 {
-                    configure.RegisterStartState<TestEntryState<TestSubFsm>>();
-                    configure.RegisterSubFsm<TestSubFsm>(subConfigure =>
+                    fsmBuilder.RegisterStartState<TestEntryState<TestSubFsm>>();
+                    fsmBuilder.RegisterSubFsm<TestSubFsm>(subConfigure =>
                     {
                         subConfigure.RegisterStartState<TestSubState>();
                     });
@@ -81,10 +81,10 @@ namespace Tests.VContainerTests
         {
             _testLifetimeScope.OnConfigure = builder =>
             {
-                builder.RegisterFsm<TestFsm>(configure =>
+                builder.RegisterFsm<TestFsm>(fsmBuilder =>
                 {
-                    configure.RegisterStartState<TestEntryState<TestFsmSlot>>();
-                    configure.RegisterFsmSlot<TestFsmSlot, TestChildFsm>();
+                    fsmBuilder.RegisterStartState<TestEntryState<TestFsmSlot>>();
+                    fsmBuilder.RegisterFsmSlot<TestFsmSlot, TestChildFsm>();
                 });
 
                 builder.RegisterFsm<TestChildFsm>(configure =>

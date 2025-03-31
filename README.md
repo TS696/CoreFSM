@@ -63,10 +63,10 @@ public class MyLifetimeScope : LifetimeScope
 {
     protected override void Configure(IContainerBuilder builder)
     {
-        builder.RegisterFsm<MyFsm>(configure =>
+        builder.RegisterFsm<MyFsm>(fsmBuilder =>
         {
-            configure.RegisterStartState<MyEntryState>();
-            configure.RegisterState<MyExitState>();
+            fsmBuilder.RegisterStartState<MyEntryState>();
+            fsmBuilder.RegisterState<MyExitState>();
         });
     }
 }
