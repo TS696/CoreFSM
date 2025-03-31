@@ -106,15 +106,4 @@ namespace Tests.VContainerTests
     public class TestSubState : IState<TestSubFsm>
     {
     }
-
-    public class TestChildFsm : Fsm<TestChildFsm>
-    {
-        public TestChildFsm(IEnumerable<IState<TestChildFsm>> states, Type startStateType) : base(states, startStateType)
-        {
-        }
-    }
-
-    public class TestChildState : IState<TestChildFsm>
-    {
-    }
 }

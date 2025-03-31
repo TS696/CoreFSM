@@ -162,28 +162,5 @@ namespace Tests.Editor
                 return NextState<ChildFsm>.End();
             }
         }
-
-        private class GrandChildFsm : Fsm<GrandChildFsm>
-        {
-            public GrandChildFsm(IEnumerable<IState<GrandChildFsm>> states) : base(states, typeof(GrandChildFsmEntryPoint))
-            {
-            }
-        }
-
-        private class GrandChildFsmEntryPoint : IState<GrandChildFsm>
-        {
-            public NextState<GrandChildFsm> OnTick()
-            {
-                return NextState<GrandChildFsm>.TransitionTo<GrandChildFsmExitPoint>();
-            }
-        }
-
-        private class GrandChildFsmExitPoint : IState<GrandChildFsm>
-        {
-            public NextState<GrandChildFsm> OnTick()
-            {
-                return NextState<GrandChildFsm>.End();
-            }
-        }
     }
 }
