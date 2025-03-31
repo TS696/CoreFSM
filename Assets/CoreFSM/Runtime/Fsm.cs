@@ -6,7 +6,6 @@ namespace CoreFSM
     public abstract class Fsm<TFsm> : IFsm<TFsm> where TFsm : Fsm<TFsm>
     {
         private readonly StateRunner<TFsm> _stateRunner;
-        internal StateRunner<TFsm> StateRunner => _stateRunner;
 
         public IState<TFsm> CurrentState => _stateRunner.CurrentState;
         public bool IsEnded => _stateRunner.IsEnded;

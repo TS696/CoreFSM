@@ -36,13 +36,6 @@ namespace CoreFSM.VContainer
                 .WithParameter(subFsmBuilder.StartStateType);
         }
 
-        public void RegisterFsmSlot<TSlot, TSubFsm>()
-            where TSlot : FsmSlot<TFsm, TSubFsm>
-            where TSubFsm : Fsm<TSubFsm>
-        {
-            RegisterState<TSlot>();
-        }
-
         internal void OnConfigured()
         {
             if (_startStateType == null)
