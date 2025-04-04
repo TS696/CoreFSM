@@ -59,9 +59,9 @@ namespace Tests.VContainerTests
                 builder.RegisterFsm<TestFsm>(fsmBuilder =>
                 {
                     fsmBuilder.RegisterStartState<TestEntryState<TestSubFsm>>();
-                    fsmBuilder.RegisterSubFsm<TestSubFsm>(subConfigure =>
+                    fsmBuilder.RegisterSubFsm<TestSubFsm>(subFsmBuilder =>
                     {
-                        subConfigure.RegisterStartState<TestSubState>();
+                        subFsmBuilder.RegisterStartState<TestSubState>();
                     });
                 });
             };
