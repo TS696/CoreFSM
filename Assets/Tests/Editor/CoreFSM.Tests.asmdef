@@ -5,7 +5,6 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "CoreFSM",
-        "CoreFSM.UniTask",
         "UniTask"
     ],
     "includePlatforms": [
@@ -21,12 +20,6 @@
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],
-    "versionDefines": [
-        {
-            "name": "com.cysharp.unitask",
-            "expression": "",
-            "define": "COREFSM_USE_UNITASK"
-        }
-    ],
+    "versionDefines": [],
     "noEngineReferences": false
 }
