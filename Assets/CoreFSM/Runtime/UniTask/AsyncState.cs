@@ -1,7 +1,7 @@
-﻿using Cysharp.Threading.Tasks;
+﻿#if COREFSM_USE_UNITASK
+using Cysharp.Threading.Tasks;
 using System.Threading;
 
-#if COREFSM_USE_UNITASK
 namespace CoreFSM.UniTask
 {
     public abstract class AsyncState<TFsm> : IState<TFsm>
