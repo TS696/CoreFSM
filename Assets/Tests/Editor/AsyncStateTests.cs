@@ -1,5 +1,4 @@
-﻿#if COREFSM_USE_UNITASK
-using CoreFSM;
+﻿using CoreFSM;
 using CoreFSM.UniTask;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
@@ -91,4 +90,3 @@ namespace Tests.Editor
         }
     }
 }
-#endif
