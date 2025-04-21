@@ -10,7 +10,7 @@ namespace Tests.Editor
         [Test]
         public void SingleStateTickTest()
         {
-            var states = new List<IState<SingleStateFsm>>
+            var states = new List<StateBase<SingleStateFsm>>
             {
                 new SingleState()
             };
@@ -26,7 +26,7 @@ namespace Tests.Editor
         public void DestroyTest()
         {
             var singleState = new SingleState();
-            var states = new List<IState<SingleStateFsm>>
+            var states = new List<StateBase<SingleStateFsm>>
             {
                 singleState
             };
@@ -45,7 +45,7 @@ namespace Tests.Editor
         [Test]
         public void MultiStateTickTest()
         {
-            var states = new List<IState<MultiStateFsm>>
+            var states = new List<StateBase<MultiStateFsm>>
             {
                 new MultiStateFsmEntryPoint(),
                 new MultiStateFsmCore(),
@@ -66,7 +66,7 @@ namespace Tests.Editor
         [Test]
         public void ResetTest()
         {
-            var states = new List<IState<MultiStateFsm>>
+            var states = new List<StateBase<MultiStateFsm>>
             {
                 new MultiStateFsmEntryPoint(),
                 new MultiStateFsmCore(),
@@ -94,21 +94,21 @@ namespace Tests.Editor
 
         private class SingleStateFsm : Fsm<SingleStateFsm>
         {
-            public SingleStateFsm(IEnumerable<IState<SingleStateFsm>> states) : base(states, typeof(SingleState))
+            public SingleStateFsm(IEnumerable<StateBase<SingleStateFsm>> states) : base(states, typeof(SingleState))
             {
             }
         }
 
-        private class SingleState : IState<SingleStateFsm>
+        private class SingleState : StateBase<SingleStateFsm>
         {
             public bool IsDestroyed { get; private set; }
 
-            public NextState<SingleStateFsm> OnTick()
+            public override NextState<SingleStateFsm> OnTick()
             {
-                return NextState<SingleStateFsm>.End();
+                return End();
             }
 
-            public void OnDestroy()
+            public override void OnDestroy()
             {
                 IsDestroyed = true;
             }
@@ -116,39 +116,39 @@ namespace Tests.Editor
 
         private class MultiStateFsm : Fsm<MultiStateFsm>
         {
-            public MultiStateFsm(IEnumerable<IState<MultiStateFsm>> states) : base(states, typeof(MultiStateFsmEntryPoint))
+            public MultiStateFsm(IEnumerable<StateBase<MultiStateFsm>> states) : base(states, typeof(MultiStateFsmEntryPoint))
             {
             }
         }
 
-        private class MultiStateFsmEntryPoint : IState<MultiStateFsm>
+        private class MultiStateFsmEntryPoint : StateBase<MultiStateFsm>
         {
-            public NextState<MultiStateFsm> OnTick()
+            public override NextState<MultiStateFsm> OnTick()
             {
-                return NextState<MultiStateFsm>.TransitionTo<MultiStateFsmCore>();
+                return To<MultiStateFsmCore>();
             }
         }
 
-        private class MultiStateFsmCore : IState<MultiStateFsm>
+        private class MultiStateFsmCore : StateBase<MultiStateFsm>
         {
             public bool IsDestroyed { get; private set; }
 
-            public NextState<MultiStateFsm> OnTick()
+            public override NextState<MultiStateFsm> OnTick()
             {
-                return NextState<MultiStateFsm>.TransitionTo<MultiStateFsmExitPoint>();
+                return To<MultiStateFsmExitPoint>();
             }
 
-            public void OnDestroy()
+            public override void OnDestroy()
             {
                 IsDestroyed = true;
             }
         }
 
-        private class MultiStateFsmExitPoint : IState<MultiStateFsm>
+        private class MultiStateFsmExitPoint : StateBase<MultiStateFsm>
         {
-            public NextState<MultiStateFsm> OnTick()
+            public override NextState<MultiStateFsm> OnTick()
             {
-                return NextState<MultiStateFsm>.End();
+                return End();
             }
         }
     }

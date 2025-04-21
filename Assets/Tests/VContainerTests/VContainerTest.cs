@@ -79,31 +79,39 @@ namespace Tests.VContainerTests
 
     public class TestFsm : Fsm<TestFsm>
     {
-        public TestFsm(IEnumerable<IState<TestFsm>> states, Type startStateType) : base(states, startStateType)
+        public TestFsm(IEnumerable<StateBase<TestFsm>> states, Type startStateType) : base(states, startStateType)
         {
         }
     }
 
-    public class TestEntryState<TState> : IState<TestFsm> where TState : IState<TestFsm>
+    public class TestEntryState<TState> : StateBase<TestFsm> where TState : StateBase<TestFsm>
     {
-        public NextState<TestFsm> OnTick()
+        public override NextState<TestFsm> OnTick()
         {
-            return NextState<TestFsm>.TransitionTo<TState>();
+            return To<TState>();
         }
     }
 
-    public class TestState : IState<TestFsm>
+    public class TestState : StateBase<TestFsm>
     {
+        public override NextState<TestFsm> OnTick()
+        {
+            return Continue();
+        }
     }
 
     public class TestSubFsm : SubFsm<TestFsm, TestSubFsm>
     {
-        public TestSubFsm(IEnumerable<IState<TestSubFsm>> states, Type startStateType) : base(states, startStateType)
+        public TestSubFsm(IEnumerable<StateBase<TestSubFsm>> states, Type startStateType) : base(states, startStateType)
         {
         }
     }
 
-    public class TestSubState : IState<TestSubFsm>
+    public class TestSubState : StateBase<TestSubFsm>
     {
+        public override NextState<TestSubFsm> OnTick()
+        {
+            return Continue();
+        }
     }
 }

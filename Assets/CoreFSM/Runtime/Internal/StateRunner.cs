@@ -7,15 +7,15 @@ namespace CoreFSM
     {
         private readonly Type _startStateType;
 
-        public IState<TFsm> CurrentState { get; private set; }
+        public StateBase<TFsm> CurrentState { get; private set; }
 
         public bool IsEnded => CurrentState == EndState<TFsm>.Instance || _isDisposed;
 
-        private readonly Dictionary<Type, IState<TFsm>> _states = new();
+        private readonly Dictionary<Type, StateBase<TFsm>> _states = new();
 
         private bool _isDisposed;
 
-        public StateRunner(IEnumerable<IState<TFsm>> states, Type startStateType)
+        public StateRunner(IEnumerable<StateBase<TFsm>> states, Type startStateType)
         {
             _startStateType = startStateType;
             CurrentState = EntryState<TFsm>.Instance;
@@ -25,7 +25,7 @@ namespace CoreFSM
             }
         }
 
-        private IState<TFsm> FindState(Type type)
+        private StateBase<TFsm> FindState(Type type)
         {
             if (type == typeof(EndState<TFsm>))
             {

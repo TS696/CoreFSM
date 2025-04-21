@@ -4,14 +4,14 @@ using System.Threading;
 
 namespace CoreFSM.UniTask
 {
-    public abstract class AsyncState<TFsm> : IState<TFsm>
+    public abstract class AsyncState<TFsm> : StateBase<TFsm>
         where TFsm : IFsm<TFsm>
     {
         private CancellationTokenSource _cancellationTokenSource;
         private NextState<TFsm>? _nextState;
         private ChannelWriter<AsyncUnit> _tickWriter;
 
-        void IState<TFsm>.OnEnter()
+        public override void OnEnter()
         {
             _cancellationTokenSource = new CancellationTokenSource();
 
@@ -25,7 +25,7 @@ namespace CoreFSM.UniTask
 
         protected abstract UniTask<NextState<TFsm>> Run(ChannelReader<AsyncUnit> tickReader, CancellationToken cancellationToken);
 
-        NextState<TFsm> IState<TFsm>.OnTick()
+        public override NextState<TFsm> OnTick()
         {
             if (_nextState.HasValue)
             {
@@ -33,16 +33,16 @@ namespace CoreFSM.UniTask
             }
 
             _tickWriter.TryWrite(AsyncUnit.Default);
-            return NextState<TFsm>.Continue();
+            return Continue();
         }
 
-        void IState<TFsm>.OnExit()
+        public override void OnExit()
         {
             _tickWriter.TryComplete();
             CancelTask();
         }
 
-        void IState<TFsm>.OnDestroy()
+        public override void OnDestroy()
         {
             CancelTask();
         }

@@ -7,10 +7,10 @@ namespace CoreFSM
     {
         private readonly StateRunner<TFsm> _stateRunner;
 
-        public IState<TFsm> CurrentState => _stateRunner.CurrentState;
+        public StateBase<TFsm> CurrentState => _stateRunner.CurrentState;
         public bool IsEnded => _stateRunner.IsEnded;
 
-        protected Fsm(IEnumerable<IState<TFsm>> states, Type startStateType)
+        protected Fsm(IEnumerable<StateBase<TFsm>> states, Type startStateType)
         {
             _stateRunner = new StateRunner<TFsm>(states, startStateType);
         }

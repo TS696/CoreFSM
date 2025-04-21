@@ -10,7 +10,7 @@ namespace Tests.Editor
         [Test]
         public void SubFsmTest()
         {
-            var childStates = new List<IState<ChildFsm>>
+            var childStates = new List<StateBase<ChildFsm>>
             {
                 new ChildFsmEntryPoint<ChildFsmCore>(),
                 new ChildFsmCore(),
@@ -18,7 +18,7 @@ namespace Tests.Editor
             };
             var childFsm = new ChildFsm(childStates, typeof(ChildFsmEntryPoint<ChildFsmCore>));
 
-            var states = new List<IState<ParentFsm>>
+            var states = new List<StateBase<ParentFsm>>
             {
                 new ParentFsmEntryPoint<ChildFsm>(),
                 childFsm,
@@ -44,7 +44,7 @@ namespace Tests.Editor
         [Test]
         public void SubFsmReEntryTest()
         {
-            var childStates = new List<IState<ChildFsm>>
+            var childStates = new List<StateBase<ChildFsm>>
             {
                 new ChildFsmEntryPoint<ChildFsmCore>(),
                 new ChildFsmCore(),
@@ -52,7 +52,7 @@ namespace Tests.Editor
             };
             var childFsm = new ChildFsmReEntry(childStates, typeof(ChildFsmEntryPoint<ChildFsmCore>));
 
-            var states = new List<IState<ParentFsm>>
+            var states = new List<StateBase<ParentFsm>>
             {
                 new ParentFsmEntryPoint<ChildFsmReEntry>(),
                 childFsm,
@@ -81,36 +81,36 @@ namespace Tests.Editor
 
         private class ParentFsm : Fsm<ParentFsm>
         {
-            public ParentFsm(IEnumerable<IState<ParentFsm>> states, Type startStateType) : base(states, startStateType)
+            public ParentFsm(IEnumerable<StateBase<ParentFsm>> states, Type startStateType) : base(states, startStateType)
             {
             }
         }
 
-        private class ParentFsmEntryPoint<TState> : IState<ParentFsm> where TState : IState<ParentFsm>
+        private class ParentFsmEntryPoint<TState> : StateBase<ParentFsm> where TState : StateBase<ParentFsm>
         {
-            public NextState<ParentFsm> OnTick()
+            public override NextState<ParentFsm> OnTick()
             {
-                return NextState<ParentFsm>.TransitionTo<TState>();
+                return To<TState>();
             }
         }
 
-        private class ParentFsmExitPoint : IState<ParentFsm>
+        private class ParentFsmExitPoint : StateBase<ParentFsm>
         {
-            public NextState<ParentFsm> OnTick()
+            public override NextState<ParentFsm> OnTick()
             {
-                return NextState<ParentFsm>.End();
+                return End();
             }
         }
 
         private class ChildFsm : SubFsm<ParentFsm, ChildFsm>
         {
-            public ChildFsm(IEnumerable<IState<ChildFsm>> states, Type startStateType) : base(states, startStateType)
+            public ChildFsm(IEnumerable<StateBase<ChildFsm>> states, Type startStateType) : base(states, startStateType)
             {
             }
 
             protected override NextState<ParentFsm> OnEndTransition()
             {
-                return NextState<ParentFsm>.TransitionTo<ParentFsmExitPoint>();
+                return To<ParentFsmExitPoint>();
             }
         }
 
@@ -118,48 +118,48 @@ namespace Tests.Editor
         {
             private int _tickCount;
 
-            public ChildFsmReEntry(IEnumerable<IState<ChildFsm>> states, Type startStateType) : base(states, startStateType)
+            public ChildFsmReEntry(IEnumerable<StateBase<ChildFsm>> states, Type startStateType) : base(states, startStateType)
             {
             }
 
             protected override NextState<ParentFsm> OnEndTransition()
             {
-                return NextState<ParentFsm>.TransitionTo<ParentFsmExitPoint>();
+                return To<ParentFsmExitPoint>();
             }
 
             protected override NextState<ParentFsm> OnPostTickTransition()
             {
                 if (_tickCount > 0)
                 {
-                    return NextState<ParentFsm>.Continue();
+                    return Continue();
                 }
 
                 _tickCount++;
-                return NextState<ParentFsm>.TransitionTo<ChildFsmReEntry>();
+                return To<ChildFsmReEntry>();
             }
         }
 
-        private class ChildFsmEntryPoint<TState> : IState<ChildFsm> where TState : IState<ChildFsm>
+        private class ChildFsmEntryPoint<TState> : StateBase<ChildFsm> where TState : StateBase<ChildFsm>
         {
-            public NextState<ChildFsm> OnTick()
+            public override NextState<ChildFsm> OnTick()
             {
-                return NextState<ChildFsm>.TransitionTo<TState>();
+                return To<TState>();
             }
         }
 
-        private class ChildFsmCore : IState<ChildFsm>
+        private class ChildFsmCore : StateBase<ChildFsm>
         {
-            public NextState<ChildFsm> OnTick()
+            public override NextState<ChildFsm> OnTick()
             {
-                return NextState<ChildFsm>.TransitionTo<ChildFsmExitPoint>();
+                return To<ChildFsmExitPoint>();
             }
         }
 
-        private class ChildFsmExitPoint : IState<ChildFsm>
+        private class ChildFsmExitPoint : StateBase<ChildFsm>
         {
-            public NextState<ChildFsm> OnTick()
+            public override NextState<ChildFsm> OnTick()
             {
-                return NextState<ChildFsm>.End();
+                return End();
             }
         }
     }

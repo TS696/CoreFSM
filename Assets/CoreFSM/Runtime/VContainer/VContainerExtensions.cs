@@ -15,15 +15,15 @@ namespace CoreFSM.VContainer
             _containerBuilder = containerBuilder;
         }
 
-        public void RegisterStartState<TState>() where TState : IState<TFsm>
+        public void RegisterStartState<TState>() where TState : StateBase<TFsm>
         {
             _startStateType = typeof(TState);
             RegisterState<TState>();
         }
 
-        public void RegisterState<TState>() where TState : IState<TFsm>
+        public void RegisterState<TState>() where TState : StateBase<TFsm>
         {
-            _containerBuilder.Register<IState<TFsm>, TState>(Lifetime.Singleton);
+            _containerBuilder.Register<StateBase<TFsm>, TState>(Lifetime.Singleton);
         }
 
         public void RegisterSubFsm<TSubFsm>(Action<FsmBuilder<TSubFsm>> configure)
@@ -32,7 +32,7 @@ namespace CoreFSM.VContainer
             var subFsmBuilder = new FsmBuilder<TSubFsm>(_containerBuilder);
             configure(subFsmBuilder);
             subFsmBuilder.OnConfigured();
-            _containerBuilder.Register<IState<TFsm>, TSubFsm>(Lifetime.Singleton)
+            _containerBuilder.Register<StateBase<TFsm>, TSubFsm>(Lifetime.Singleton)
                 .WithParameter(subFsmBuilder.StartStateType);
         }
 

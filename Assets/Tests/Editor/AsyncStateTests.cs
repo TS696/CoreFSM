@@ -16,7 +16,7 @@ namespace Tests.Editor
         [Test]
         public void AsyncStateTickTest()
         {
-            var states = new List<IState<AsyncStateFsm>>
+            var states = new List<StateBase<AsyncStateFsm>>
             {
                 new AsyncTickTestState(),
             };
@@ -36,7 +36,7 @@ namespace Tests.Editor
         {
             var asyncCancelTestState = new AsyncCancelTestState();
 
-            var states = new List<IState<AsyncStateFsm>>
+            var states = new List<StateBase<AsyncStateFsm>>
             {
                 asyncCancelTestState,
             };
@@ -52,7 +52,7 @@ namespace Tests.Editor
 
         private class AsyncStateFsm : Fsm<AsyncStateFsm>
         {
-            public AsyncStateFsm(IEnumerable<IState<AsyncStateFsm>> states, Type startStateType) : base(states, startStateType)
+            public AsyncStateFsm(IEnumerable<StateBase<AsyncStateFsm>> states, Type startStateType) : base(states, startStateType)
             {
             }
         }
@@ -66,7 +66,7 @@ namespace Tests.Editor
                 Debug.Log("tick 2");
                 await tickReader.WaitToReadAsync(cancellationToken);
                 Debug.Log("tick 3");
-                return NextState<AsyncStateFsm>.End();
+                return End();
             }
         }
 
@@ -85,7 +85,7 @@ namespace Tests.Editor
                     IsCancelled = true;
                 }
 
-                return NextState<AsyncStateFsm>.End();
+                return End();
             }
         }
     }
