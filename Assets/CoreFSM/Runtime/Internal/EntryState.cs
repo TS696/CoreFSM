@@ -1,6 +1,6 @@
 ﻿namespace CoreFSM
 {
-    internal class EntryState<TFsm> : StateBase<TFsm> where TFsm : IFsm<TFsm>
+    internal sealed class EntryState<TFsm> : StateBase<TFsm> where TFsm : IFsm<TFsm>
     {
         public static EntryState<TFsm> Instance { get; } = new();
 
