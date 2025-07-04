@@ -14,6 +14,7 @@ namespace CoreFSM
         private readonly Dictionary<Type, IState<TFsm>> _states = new();
 
         private bool _isDisposed;
+        private bool _hasStarted;
 
         public StateRunner(IEnumerable<IState<TFsm>> states, Type startStateType)
         {
@@ -44,8 +45,9 @@ namespace CoreFSM
         {
             ThrowIfDisposed();
 
-            if (CurrentState is EntryState<TFsm>)
+            if (!_hasStarted)
             {
+                _hasStarted = true;
                 CurrentState = FindState(_startStateType);
                 CurrentState.OnEnter();
             }
@@ -79,6 +81,7 @@ namespace CoreFSM
             }
 
             CurrentState = EntryState<TFsm>.Instance;
+            _hasStarted = false;
         }
 
         private void ThrowIfDisposed()
