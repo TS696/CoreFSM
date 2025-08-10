@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CoreFSM
 {
-    public abstract class Fsm<TFsm> : IFsm<TFsm> where TFsm : Fsm<TFsm>
+    public abstract class Fsm<TFsm> : IFsm<TFsm>, IDisposable where TFsm : Fsm<TFsm> 
     {
         private readonly StateRunner<TFsm> _stateRunner;
 

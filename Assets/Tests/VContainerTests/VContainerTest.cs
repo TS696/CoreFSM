@@ -4,7 +4,9 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TestTools;
 using VContainer;
+using Object = UnityEngine.Object;
 
 namespace Tests.VContainerTests
 {
@@ -48,7 +50,6 @@ namespace Tests.VContainerTests
             var testFsm = container.Resolve<TestFsm>();
             testFsm.Tick();
             Assert.That(testFsm.CurrentState, Is.InstanceOf<TestState>());
-            testFsm.Dispose();
         }
 
         [Test]
@@ -73,7 +74,30 @@ namespace Tests.VContainerTests
             var testFsm = container.Resolve<TestFsm>();
             testFsm.Tick();
             Assert.That(testFsm.CurrentState, Is.InstanceOf<TestSubFsm>());
-            testFsm.Dispose();
+        }
+        
+        [Test]
+        public void DisposeTest()
+        {
+            _testLifetimeScope.OnConfigure = builder =>
+            {
+                builder.RegisterFsm<TestFsm>(fsmBuilder =>
+                {
+                    fsmBuilder.RegisterStartState<TestEntryState<TestState>>();
+                    fsmBuilder.RegisterState<TestState>();
+                });
+            };
+
+            _testLifetimeScope.Build();
+
+            var container = _testLifetimeScope.Container;
+
+            var testFsm = container.Resolve<TestFsm>();
+            testFsm.Tick();
+            Assert.That(testFsm.CurrentState, Is.InstanceOf<TestState>());
+            Object.DestroyImmediate(_testLifetimeScope.gameObject);
+            
+            LogAssert.Expect(LogType.Log, "TestState destroyed");
         }
     }
 
@@ -94,6 +118,10 @@ namespace Tests.VContainerTests
 
     public class TestState : IState<TestFsm>
     {
+        public void OnDestroy()
+        {
+            Debug.Log("TestState destroyed");
+        }
     }
 
     public class TestSubFsm : SubFsm<TestFsm, TestSubFsm>
