@@ -4,7 +4,7 @@ A simple, DI-friendly state machine library for Unity.
 ## Installation
 Add the following line directly to Packages/manifest.json:
 ```json
-"com.ts696.corefsm": "https://github.com/TS696/CoreFSM.git?path=Assets/CoreFSM#0.2.1"
+"com.ts696.corefsm": "https://github.com/TS696/CoreFSM.git?path=Assets/CoreFSM#1.0.0"
 ```
 
 ## Basic usage
