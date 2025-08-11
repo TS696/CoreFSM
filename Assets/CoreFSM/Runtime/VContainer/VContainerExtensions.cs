@@ -48,7 +48,7 @@ namespace CoreFSM.VContainer
     public static class VContainerExtensions
     {
         public static void RegisterFsm<TFsm>(this IContainerBuilder containerBuilder, Action<FsmBuilder<TFsm>> configure)
-            where TFsm : IFsm<TFsm>
+            where TFsm : Fsm<TFsm>
         {
             var fsmBuilder = new FsmBuilder<TFsm>(containerBuilder);
             configure(fsmBuilder);
