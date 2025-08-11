@@ -75,7 +75,7 @@ namespace Tests.VContainerTests
             testFsm.Tick();
             Assert.That(testFsm.CurrentState, Is.InstanceOf<TestSubFsm>());
         }
-        
+
         [Test]
         public void DisposeTest()
         {
@@ -96,7 +96,7 @@ namespace Tests.VContainerTests
             testFsm.Tick();
             Assert.That(testFsm.CurrentState, Is.InstanceOf<TestState>());
             Object.DestroyImmediate(_testLifetimeScope.gameObject);
-            
+
             LogAssert.Expect(LogType.Log, "TestState destroyed");
         }
     }

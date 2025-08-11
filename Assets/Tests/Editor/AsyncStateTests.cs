@@ -30,7 +30,7 @@ namespace Tests.Editor
             LogAssert.Expect("tick 3");
             fsm.Dispose();
         }
-        
+
         [UnityTest]
         public IEnumerator AsyncStateCancelTest()
         {

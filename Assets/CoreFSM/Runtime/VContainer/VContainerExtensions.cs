@@ -7,8 +7,7 @@ namespace CoreFSM.VContainer
     public class FsmBuilder<TFsm> where TFsm : IFsm<TFsm>
     {
         private readonly IContainerBuilder _containerBuilder;
-        private Type _startStateType;
-        internal Type StartStateType => _startStateType;
+        internal Type StartStateType { get; private set; }
 
         public FsmBuilder(IContainerBuilder containerBuilder)
         {
@@ -17,7 +16,7 @@ namespace CoreFSM.VContainer
 
         public void RegisterStartState<TState>() where TState : IState<TFsm>
         {
-            _startStateType = typeof(TState);
+            StartStateType = typeof(TState);
             RegisterState<TState>();
         }
 
@@ -38,7 +37,7 @@ namespace CoreFSM.VContainer
 
         internal void OnConfigured()
         {
-            if (_startStateType == null)
+            if (StartStateType == null)
             {
                 throw new InvalidOperationException($"Start state type is not registered. Call {nameof(RegisterStartState)}().");
             }
